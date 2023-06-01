@@ -1,0 +1,95 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+	body {
+		font-family: Arial, sans-serif;
+		background: linear-gradient(to right, #A8DDE0, #C3D6E8); /*Màu nền tổng thể*/
+		margin: 0;
+		padding: 0;
+		height: 100%;
+		overflow: hidden;
+	}
+	.container {
+	width: 100%;
+	height: calc(100% - 100px);
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+}
+
+h1 {
+	font-size: 48px;
+	color: #fff;                /*Màu chữ dòng đầu tiên*/
+	text-align: center;
+	margin-bottom: 40px;
+}
+
+p {
+	font-size: 24px;
+	color: #fff;            /*Màu chữ dòng thứ 2*/
+	line-height: 1.5;
+	margin-bottom: 40px;
+	text-align: center;
+	max-width: 80%;
+}
+
+input {
+	background-color: #4CAF50; /*Màu của nút*/
+	border: none;
+	color: rgb(255, 255, 255); /*Màu chữ trong nút*/
+	padding: 15px 30px;
+	font-size: 24px;
+	cursor: pointer;
+	border-radius: 5px;
+	transition: all 0.3s ease-in-out;
+}
+
+input:hover {
+	background-color: #ff006f; /*Màu nút sẽ đổi khi được trỏ vào*/
+}
+
+footer {
+	background-color: #333; /*Màu của footer*/
+	color: #fff;
+	padding: 10px;
+	text-align: center;
+	font-size: 18px;
+	position: absolute;
+	bottom: 0;
+	width: 100%;
+}
+.image-container {
+display: flex;
+justify-content: center;
+margin-top: 50px;           /*Khoảng cách giữa nút button và ảnh*/
+}
+
+.image-container img {
+width: 200px;
+height: 200px;
+margin: 0 10px;
+}
+</style>
+</head>
+<body>			
+
+    <div class="container">
+		<h1>Welcome to create Chart!</h1>
+		<p>Công cụ hỗ trợ tạo biểu đồ tự động từ dữ liệu có sẵn</p>
+		<form  action="{{ url_for('Views.process_csv') }}" >
+            <input type="submit" value="Sử dụng ngay">
+		</form>
+        <div class="image-container">
+            <img src="https://cdn-icons-png.flaticon.com/512/404/404621.png" alt="Image 1">
+            <img src="https://cdn-icons-png.flaticon.com/512/167/167485.png" alt="Image 2">
+            <img src="https://cdn-icons-png.flaticon.com/512/423/423786.png" alt="Image 3">
+          </div>
+	</div>
+</body>
+</html>

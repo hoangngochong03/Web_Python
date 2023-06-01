@@ -1,0 +1,123 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+    <style>
+        .container {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+    }
+    table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+    button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+	<div >	
+		<form action="{{ url_for('Views.home') }}">
+			<button style="background-color: rgb(9, 167, 77); color: white; padding: 10px 10px; border: none; " type="submit"><i class="fa-solid fa-house"></i></button>  
+		</form>
+	</div>
+    <br>
+    <div>
+		<form action="{{ url_for('Views.missing_values') }}">
+			<button style="background-color: rgb(9, 167, 77); color: white; padding: 10px 10px; border: none;border-radius: 50%; " type="submit"><i class="fas fa-arrow-left"></i></button>    
+		</form>
+	</div>
+    <div class="container">
+        {% if Type == "LinearRegression" %}
+        <h3>Độ đo của mô hình Linear Regression:</h3>
+        <table>
+            <tr>
+                <th>Độ đo</th>
+                <th>Giá trị</th>
+            </tr>
+            <tr>
+                <td>MEAN SQUARE ERROR</td>
+                <td>{{ accuracy }}</td>
+            </tr>
+            <tr>
+                <td>R^2 SCORE</td>
+                <td>{{ f1 }}</td>
+            </tr>
+        </table>
+        {% endif %}
+        
+        {% if Type == "LogisticRegression" %}
+    <h3 style="color:crimson ;">Độ đo của mô hình Logistic Regression:</h3>
+    <table>
+        <tr>
+            <th>Độ đo</th>
+            <th>Giá trị</th>
+        </tr>
+        <tr>
+            <td>Accuracy Score</td>
+            <td>{{ accuracy }}</td>
+        </tr>
+    </table>
+    {% endif %}
+    {% if Type == "KNeighborsClassifier" %}
+    <h3 style="color:crimson ;">Độ đo của mô hình KNeighborsClassifier:</h3>
+    <table>
+        <tr>
+            <th>Độ đo</th>
+            <th>Giá trị</th>
+        </tr>
+        <tr>
+            <td>Accuracy Score</td>
+            <td>{{ accuracy }}</td>
+        </tr>
+    </table>
+    {% endif %}
+</div>
+    
+    <br>
+    <div >
+        <h3 style="color:rgb(13, 34, 226) ;">Giá trị dự đoán dựa vào dữ liệu đầu vào:</h3> 
+        {%for i in pred%}
+            <h2>{{predict}} = {{i}} </h2> 
+        {%endfor%}
+    </div>
+    <br>
+    <form  method="POST" action="{{ url_for('Views.missing_values') }}">
+        <button  type="submit">THÊM DỰ ĐOÁN MỚI</button>
+    </form>
+    <br>
+    <form  action="{{ url_for('Views.Show_Data') }}">
+        <button  type="submit">VẼ BIỂU ĐỒ</button>  
+    </form>
+			
+
+    
+
+
+</body>
+</html>

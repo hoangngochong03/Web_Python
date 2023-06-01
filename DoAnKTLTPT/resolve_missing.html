@@ -1,0 +1,192 @@
+
+<!DOCTYPE html>
+<html lang="en">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+    <style>
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    select {
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        margin-right: 10px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    form {
+        margin-bottom: 20px;
+    }
+
+    h3 {
+        margin-bottom: 10px;
+    }
+    </style>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <title>Home</title>
+</head>
+<body>
+	<div>
+		
+		<form action="{{ url_for('Views.home') }}">
+			<button style="background-color: rgb(9, 167, 77); color: white; padding: 10px 10px; border: none; " type="submit"><i class="fa-solid fa-house"></i></button>  
+		</form>
+	</div>
+    <div>
+		<form action="{{ url_for('Views.Show_Data') }}">
+			<button style="background-color: rgb(9, 167, 77); color: white; padding: 10px 10px; border: none;border-radius: 50%; " type="submit"><i class="fas fa-arrow-left"></i></button>    
+		</form>
+	</div>
+	<div>
+			<h1 style="color:rgb(74, 202, 60) ;text-align: center;">Xử lý dữ liệu thành công !</h1>
+			<table>
+				<thead>
+                    <table style="width:100%"> 
+                        <tr>
+                            {% for col in statistic.keys() %}
+                                <th>{{ col }}    </th>
+                            {% endfor %}
+                        </tr>
+                        <tr>
+                            {% for value in statistic.values() %}
+                                <td>{{ value }} Nan</td>
+                            {% endfor %}
+                        </tr>
+                        <br>
+                    </table>
+                    <tr>
+							</form>
+							<form method="POST" action="{{ url_for('Views.Predict') }}">
+                                    <div><h3 style="color:crimson ;">Chọn dự liệu để huấn luyện</h3></div>
+                                    <div>
+                                        {% if change==1 %}
+                                        <b><h4 style="color:crimson ;">Ghi chú:</h4> thay thế các giá trị chữ bằng số như dưới đây</b> <br>
+                                        <table>
+                                          <tr>
+                                            {% for i in lst_object %}
+                                              {% for row in i.keys() %}
+                                                <td><b>{{ row }}</b></td>
+                                              {% endfor %}
+                                            {% endfor %}
+                                          </tr>
+                                          <tr>
+                                            {% for i in lst_object %}
+                                              {% for row in i.keys() %}
+                                                <td><b>{{ i[row] }}</b></td>
+                                              {% endfor %}
+                                            {% endfor %}
+                                          </tr>
+                                        </table>
+                                        {% endif %}
+                                    </div>
+                                    <label for="Train"><b>Nhập đúng tên các cột cho dữ liệu huấn luyện(cách nhau bằng dấu cách)</b>:</label>
+                                    <input type="text" id="Train" name="Train">
+                                    <br>
+                                    <b>Cột dự đoán</b>
+                                    <select name="Predict">
+                                        
+                                        <option disabled selected><b>Target data</b></option>
+                                        {% for i in columns %}
+                                            <option value="{{ i }}">{{i}}</option>
+                                        {% endfor %}
+                                    </select>
+                                    <br>
+                                    <label for="x"><b>Dữ liệu dự đoán(cách nhau bằng dấu cách)</b>:</label>
+                                    <input type="text" id="x" name="x">
+                                    <br>
+                                    <select name="type">
+                                        <option disabled selected><b>Mô hình đào tạo</b></option>
+                                            <option value="{{'LogisticRegression'}}">LogisticRegression</option>
+                                            <option value="{{ 'LinearRegression' }}">LinearRegression</option>
+                                            <option value="{{ 'KNeighborsClassifier' }}">KNeighborsClassifier</option>
+                                    </select>
+                                    <button type="submit">Submit</button>
+							</form>
+
+
+
+
+                            <form method="POST" action="{{ url_for('Views.Draw')}}">
+                                <div><h3 style="color:crimson ;">Chọn các cột để vẽ biểu đồ</h3></div>
+                                <select name="X">
+                                    <option disabled selected>X-axis</option>
+                                    {% for i in columns %}
+                                        <option value="{{ i }}">{{i}}</option>
+                                    {% endfor %}
+                                </select>
+                                <br>
+                                <select name="Y">
+                                    <option disabled selected>Y-axis</option>
+                                    {% for i in columns %}
+                                        <option value="{{ i }}">{{i}}</option>
+                                    {% endfor %}
+                                </select>
+                                <br>
+                                <select name="type">
+                                    <option disabled selected>type</option>
+                                    <option value="line">Line plot</option>
+                                    <option value="scatter">Scatter plot</option>
+                                    <option value="histogram">Histogram plot</option>
+                                    <option value="bar">Bar plot</option>
+                                </select>
+                                <button type="submit">Vẽ biểu đồ</button>
+                            </form>
+					</tr>
+				</thead>
+			<table style="width:100%">
+				<tr>
+					{% for col in data_path[0].keys() %}
+					<th>{{ col }}</th>
+					{% endfor %}
+				</tr>
+				<tbody>
+					{% for row in data_path %}
+					<tr>
+						{% for value in row.values() %}
+						<td>{{ value }}</td>
+						{% endfor %}
+					</tr>
+					{% endfor %}
+				</tbody>
+
+				
+			</table>
+			<br> 
+			
+
+			
+			
+			<br>
+			
+	</div>
+    
+
+
+</body>
+</html>

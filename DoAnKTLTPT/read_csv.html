@@ -1,0 +1,85 @@
+<!-- file html dùng để import file csv -->
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+    body{
+        background-color: rgb(241, 241, 241);
+    }
+    .home{
+        padding-top: 50px;
+        padding-left: 50px;
+    }
+    .home i{
+        font-size: 30px;
+    }
+    .main{
+    width: 40%;
+    text-align: center;
+    background: #fff;
+    margin: 20px auto;
+    box-shadow: 1px 1px 2px rgba(0,0,0,0.125);
+    padding: 30px;
+    border: 1px solid rgb(88, 88, 88);              
+    }
+    h1{
+        text-align: center;
+        font-size: 50px;
+        font-weight: bold;
+    }
+    .btn{
+    display: inline-block;
+    padding: 00.6rem 2rem;
+    font-weight: 500;
+    border-radius: 2rem;
+    cursor:pointer;
+    color: white;
+    background-color:rgb(62, 72, 255);
+    transition: all 300ms ease;
+    }
+    input[type="file"]::-webkit-file-upload-button {
+    visibility: hidden;
+    }
+    input[type="file"]::before {
+    content: 'Choose File';
+    display: inline-block;
+    padding: 0.6rem 2rem;
+    font-weight: 500;
+    border-radius: 2rem;
+    cursor: pointer;
+    color: white;
+    background-color:rgb(62, 72, 255);
+    transition: all 300ms ease;
+    }
+    input[type="file"]:hover::before {
+        background-color:rgb(23, 34, 248);
+    }
+    </style>
+    <title>Document</title>
+</head>
+<body>
+	<div>
+		
+		<form action="{{ url_for('Views.home') }}">
+			<button style="background-color: rgb(9, 167, 77); color: white; padding: 10px 10px; border: none; " type="submit"><i class="fa-solid fa-house"></i></button>  
+		</form>
+	</div>
+</form>
+    <form method="POST" action="{{ url_for('Views.process_csv') }}" enctype="multipart/form-data">
+    <div class="main">
+    <h1>Upload a CSV File</h1>
+    <input type="file" name="file">
+    <input class="btn" type="submit" value="Upload">
+    </form>
+    {% if file_path %}
+    <form method="GET" action="{{ url_for('Views.Draw') }}" >
+        <input type="hidden" name="file" value="{{ file_path }}">
+    </form>
+    {% endif %}
+    </div>
+</body>
+</html>

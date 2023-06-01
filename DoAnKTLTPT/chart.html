@@ -1,0 +1,21 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home</title>
+</head>
+<body>
+    
+    <form method="POST" action="{{ url_for('Views.chart') }}">
+        <label for="x_data">X-axis data:</label>
+        <input type="text" id="x_data" name="x_data">
+        <br>
+        <label for="y_data">Y-axis data:</label>
+        <input type="text" id="y_data" name="y_data">
+        <br><br>
+        <input type="submit" value="Generate chart">
+    </form>
+</body>
+</html>

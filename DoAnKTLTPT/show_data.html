@@ -1,0 +1,166 @@
+
+<!DOCTYPE html>
+<html lang="en">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta2/css/all.min.css">
+    <style>
+        table {
+        width: 100%;
+        border-collapse: collapse;
+        margin-bottom: 20px;
+    }
+
+    th, td {
+        padding: 10px;
+        text-align: left;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f2f2f2;
+        font-weight: bold;
+    }
+
+    select {
+        padding: 5px;
+        border: 1px solid #ddd;
+        border-radius: 3px;
+        margin-right: 10px;
+    }
+
+    button {
+        padding: 10px 20px;
+        background-color: #4CAF50;
+        color: white;
+        border: none;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+
+    form {
+        margin-bottom: 20px;
+    }
+
+    h3 {
+        margin-bottom: 10px;
+    }
+        </style>
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <title>Home</title>
+</head>
+<body>
+	<div>
+		
+		<form action="{{ url_for('Views.home') }}">
+			<button style="background-color: rgb(9, 167, 77); color: white; padding: 10px 10px; border: none; " type="submit"><i class="fa-solid fa-house"></i></button>  
+		</form>
+	</div>
+    <div>
+		<form action="{{ url_for('Views.process_csv') }}">
+			<button style="background-color: rgb(9, 167, 77); color: white; padding: 10px 10px; border: none;border-radius: 50%; " type="submit"><i class="fas fa-arrow-left"></i></button>    
+		</form>
+	</div>
+	<div>
+			<h1 style="color:crimson ;text-align: center;">Dữ liệu cập nhật thành công</h1>
+			<table>
+				<thead>
+					<tr>
+						{% for col in data_path[0].keys() %}
+						<th>{{ col }}</th>
+						{% endfor %}
+					</tr>
+					<tr>
+					
+
+						<form method="POST" action="{{ url_for('Views.Draw')}}">
+							<div><h3>Chọn cột mà bạn muốn vẽ biểu đồ</h3></div>
+							<select name="X">
+								<option disabled selected>X-axis</option>
+								{% for i in columns %}
+									<option value="{{ i }}">{{i}}</option>
+								{% endfor %}
+							</select>
+							<select name="Y">
+								<option disabled selected>Y-axis</option>
+								{% for i in columns %}
+									<option value="{{ i }}">{{i}}</option>
+								{% endfor %}
+							</select>
+							<select name="type">
+								<option disabled selected>type</option>
+								<option value="line">Line plot</option>
+								<option value="scatter">Scatter plot</option>
+								<option value="histogram">Histogram plot</option>
+								<option value="bar">Bar plot</option>
+							</select>
+							<button type="submit">Vẽ biểu đồ</button>
+							<br>
+							<br> <br>
+							</form>
+							<form method="POST" action="{{ url_for('Views.preprocessing')}}">
+								<select name="Predict">
+									<option disabled selected><b>Target data</b></option>
+									{% for i in columns %}
+										<option value="{{ i }}">{{i}}</option>
+									{% endfor %}
+								</select>
+								<button type="submit">Xem thống kê dữ liệu</button>
+							</form>
+							<br>
+							<br>
+							<br>
+					</tr>
+				</thead>
+				<tbody>
+					{% for row in data_path %}
+					<tr>
+						{% for value in row.values() %}
+						<td>{{ value }}</td>
+						{% endfor %}
+					</tr>
+					{% endfor %}
+				</tbody>
+
+				
+			</table>
+			<br>
+			<h2 style="color:crimson ;text-align: center;">Thống kê mô tả dữ liệu</h2><br>
+			<table>
+				<tr>
+					<th>Attribute</th>
+					<th>Count</th>
+					<th>Mean</th>
+					<th>Std</th>
+					<th>Min</th>
+					<th>25%</th>
+					<th>50%</th>
+					<th>75%</th>
+					<th>Max</th>
+				</tr>
+				{% for attribute, stats in des.items() %}
+				<tr>
+					<td>{{ attribute }}</td>
+					<td>{{ stats['count'] }}</td>
+					<td>{{ stats['mean'] }}</td>
+					<td>{{ stats['std'] }}</td>
+					<td>{{ stats['min'] }}</td>
+					<td>{{ stats['25%'] }}</td>
+					<td>{{ stats['50%'] }}</td>
+					<td>{{ stats['75%'] }}</td>
+					<td>{{ stats['max'] }}</td>
+				</tr>
+				{% endfor %}
+			</table>
+			<br> 
+			<br>
+							 
+			
+	</div>
+    
+
+
+</body>
+</html>
