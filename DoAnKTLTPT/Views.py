@@ -1,4 +1,5 @@
 from flask import Blueprint,render_template,session,make_response,request,redirect,url_for
+from flask_redis import FlaskRedis
 import numpy as np  
 import tempfile
 import pandas as pd 
@@ -19,7 +20,7 @@ from sklearn.model_selection import train_test_split
 from sklearn.metrics import accuracy_score
 from sklearn.neighbors import KNeighborsClassifier
 views=Blueprint(__name__,"Views")
-views.secret_key="Hong"
+views.secret_key="21522106"
 @views.route("/home")
 def home():
     return render_template("index.html") #show file html
@@ -34,13 +35,13 @@ def process_csv():
                 csv_file.save(tmp.name)
                 csv_path = tmp.name
             session['data'] = csv_path
-            return redirect(url_for('Views.Show_Data', data=csv_path))
+            return redirect(url_for('Views.Show_Data'))
         else:
             return render_template('read_csv.html')
 #Show dữ liệu excel ra
 @views.route('/Show_Data',methods=['POST','GET'])
 def Show_Data():
-        data=session['data'] 
+        data=session.get('data')
         if os.path.isfile(data):
             data=pd.read_csv(data)
         else:
@@ -49,12 +50,11 @@ def Show_Data():
 
         data_path=data.head(20)
         lst=list(data_path.columns)
-        session['lst']=lst
         des=data.describe().to_dict()
         return render_template("show_data.html", data_path=data_path.to_dict('records'),statistic=X.to_dict(),columns=lst,des=des)
 @views.route('/Statistic',methods=['POST','GET'])
 def preprocessing():
-    data=session['data']
+    data=session.get('data')
     
     if os.path.isfile(data):
         data=pd.read_csv(data)
@@ -91,55 +91,55 @@ def preprocessing():
 
 @views.route('/Preprocessing',methods=['POST','GET'])
 def missing_values():
-    data=session['data']
+    data=session.get('data')
     flag=0
-    if os.path.isfile(data):
+    if not os.path.isfile(data):
+        data=pd.read_csv(io.StringIO(data))
+    else:
         data=pd.read_csv(data)
-        tmp=data
+        col=data.columns
         if request.method=="POST":
             method=request.form.get('Method')
-        if method=="dropna()":
-            data=data.dropna()
-        elif method==None:
-            flag=1
-        else:
-            imputer=SimpleImputer(strategy=method)
-            data=imputer.fit_transform(data)
-            data=pd.DataFrame(data,columns=tmp.columns)
-    
-    else:
-        data=pd.read_csv(io.StringIO(data))
+            if method=="dropna()":
+                data=data.dropna()
+            elif method==None:
+                flag=1
+            else:
+                imputer=SimpleImputer(strategy=method)
+                data=imputer.fit_transform(data)
+                data=pd.DataFrame(data,columns=col)
+                for column in data.columns:
+                    try:
+                        data[column] = data[column].astype(float)
+                    except ValueError:
+                        pass
+        
     
 
     lst=list(data.columns)
     ###
-    tmp=data.copy()
+    temp=data.copy()
     lst_object=[]
     change=0
 
-    for x in tmp.columns:
-        if is_numeric_dtype(tmp[x]):
+    for x in temp.columns:
+        if is_numeric_dtype(temp[x]):
             continue
         else:
             label_encoder = LabelEncoder()
-            label_encoder.fit(tmp[x])
-            tmp[x]=label_encoder.transform(tmp[x])
-            lst_object.append(dict(zip(data[x].unique(),tmp[x].unique())))
+            label_encoder.fit(temp[x])
+            temp[x]=label_encoder.transform(temp[x])
+            lst_object.append(dict(zip(data[x].unique(),temp[x].unique())))
             change=1
     ###
     X=data.isna().sum()
     data_path=data.head(20)
-    tmp=X.to_dict()
-    session['data'] = data.to_csv(index=False) #  data dạng chuỗi
-    flag=0
-    for i in tmp.values():
-         if i!=0:
-              flag+=1
-    return render_template("resolve_missing.html",data_path=data_path.to_dict('records'),statistic=X.to_dict(),columns=lst,flag=flag,change=change,lst_object=lst_object)
+    session.pop('data',None)
+    session['data'] = data.to_csv(index=False)#  data dạng chuỗi
+    return render_template("resolve_missing.html",data_path=data_path.to_dict('records'),statistic=X.to_dict(),columns=lst,change=change,lst_object=lst_object)
 @views.route('/Predict',methods=['POST','GET'])
 def Predict():
     reprocess_data=session.get('data')
-    lst=session.get('lst')
     if os.path.isfile(reprocess_data):
         clean_data=pd.read_csv(reprocess_data)
     else:
@@ -171,7 +171,6 @@ def Predict():
         pred=model.predict(x_vals)
         mse = mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
-        score=model.score(X_test,y_test)
         return render_template("predict.html",pred=pred,accuracy=mse,f1=r2,Type=Type,predict=balance)
     elif Type=='LogisticRegression':
         model = LogisticRegression()
@@ -193,7 +192,6 @@ def Predict():
 @views.route('/Draw',methods=['POST','GET'])
 def Draw():
         data=session.get('data')
-        lst=session.get('lst')
         if os.path.isfile(data):
             data=pd.read_csv(data)
         else:
@@ -201,11 +199,10 @@ def Draw():
         if request.method=="POST":   
             chart_type=request.form.get('type')
             x_col = request.form.get('X')
-            y_col = request.form.get('Y')
-            session["x"]=x_col
-            session["y"]=y_col
             x_data = data[x_col].values
-            y_data = data[y_col].values  
+            y_col = request.form.get('Y')
+            if y_col!=None:
+                y_data = data[y_col].values  
             #VẼ BIỂU ĐỒ DỰA VÀO VALUES CỦA X VÀ Y
             if chart_type == 'line':
                 plt.clf()
