@@ -131,7 +131,6 @@ def missing_values():
             temp[x]=label_encoder.transform(temp[x])
             lst_object.append(dict(zip(data[x].unique(),temp[x].unique())))
             change=1
-    ###
     X=data.isna().sum()
     data_path=data.head(20)
     session.pop('data',None)
