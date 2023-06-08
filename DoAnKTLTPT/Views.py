@@ -138,7 +138,6 @@ def missing_values():
     return render_template("resolve_missing.html",data_path=data_path.to_dict('records'),statistic=X.to_dict(),columns=lst,flag=flag,change=change,lst_object=lst_object)
 @views.route('/Predict',methods=['POST','GET'])
 def Predict():
-
     reprocess_data=session.get('data')
     lst=session.get('lst')
     if os.path.isfile(reprocess_data):
@@ -151,23 +150,17 @@ def Predict():
         balance=request.form.get('Predict') 
         Train_data = request.form.get('Train')
     x_vals = [float(x) for x in x_data.split(' ')]
-    
     x_vals=np.array(x_vals).reshape(1,-1)
     Train_data=[x for x in Train_data.split(' ')]
     tmp=clean_data.copy()
     for x in Train_data:
-        if is_numeric_dtype(x):
+        if is_numeric_dtype(tmp[x]):
             continue
         else:
             label_encoder = LabelEncoder()
             label_encoder.fit(tmp[x])
             tmp[x]=label_encoder.transform(tmp[x])
-    mask=0
-    if Type=="LinearRegression" and not is_numeric_dtype(tmp[balance]):
-        mask=1
-        label_encoder = LabelEncoder()
-        label_encoder.fit(tmp[balance])
-        tmp[balance]=label_encoder.transform(tmp[balance])
+    
     input_data = tmp[Train_data]
     target_data = tmp[balance]
     X_train, X_test, y_train, y_test = train_test_split(input_data, target_data, test_size=0.3, random_state=42)
@@ -176,9 +169,6 @@ def Predict():
         model.fit(X_train, y_train)
         y_pred = model.predict(X_test)
         pred=model.predict(x_vals)
-        if mask==1:
-            y_pred =[round(v) for v in y_pred]
-            pred=[round(v) for v in pred]
         mse = mean_squared_error(y_test, y_pred)
         r2 = r2_score(y_test, y_pred)
         score=model.score(X_test,y_test)
@@ -192,7 +182,7 @@ def Predict():
         return render_template("predict.html",pred=pred,accuracy=accuracy,Type=Type,predict=balance)
     elif Type=="KNeighborsClassifier":
         k=len(tmp[balance].unique())
-        model = KNeighborsClassifier(n_neighbors=k+3,)
+        model = KNeighborsClassifier(n_neighbors=k)
         model.fit(X_train, y_train)
         y_pred=model.predict(X_test)
         pred=model.predict(x_vals)
